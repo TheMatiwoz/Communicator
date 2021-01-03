@@ -8,15 +8,22 @@ namespace Communicator
 {
     static class Program
     {
-        /// <summary>
-        /// Główny punkt wejścia dla aplikacji.
-        /// </summary>
+        public static List<Form1> listOfForms = new List<Form1>();
+
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Form1 form1 = new Form1();
+            Form1 form2 = new Form1();
+
+            listOfForms.Add(form1);
+            form1.formNumer = 0;
+            listOfForms.Add(form2);
+            form2.formNumer = 1;
+
+            Application.Run(new MultiFormContext(form1, form2));
         }
     }
 }
