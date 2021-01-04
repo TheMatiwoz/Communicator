@@ -21,6 +21,11 @@ namespace Communicator
                 {
                     if (Interlocked.Decrement(ref openForms) == 0)
                         ExitThread();
+                        
+                    if (openForms == 0 || openForms == 1)
+                    {
+                        Application.ExitThread();
+                    }
                 };
 
                 form.Show();

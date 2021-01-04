@@ -36,48 +36,52 @@
             // 
             // textBox
             // 
-            this.textBox.Location = new System.Drawing.Point(12, 12);
+            this.textBox.Location = new System.Drawing.Point(11, 10);
+            this.textBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(471, 26);
+            this.textBox.Size = new System.Drawing.Size(419, 22);
             this.textBox.TabIndex = 0;
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(539, 12);
+            this.label1.Location = new System.Drawing.Point(479, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(387, 352);
+            this.label1.Size = new System.Drawing.Size(344, 282);
             this.label1.TabIndex = 1;
             this.label1.Text = "label1";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(674, 400);
+            this.button1.Location = new System.Drawing.Point(599, 320);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 53);
+            this.button1.Size = new System.Drawing.Size(98, 42);
             this.button1.TabIndex = 2;
             this.button1.Text = "WYŚLIJ";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.SendMessage_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(117, 311);
+            this.button2.Location = new System.Drawing.Point(104, 249);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(163, 53);
+            this.button2.Size = new System.Drawing.Size(145, 42);
             this.button2.TabIndex = 3;
             this.button2.Text = "KONWERTUJ";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.ConvertText_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(938, 567);
+            this.ClientSize = new System.Drawing.Size(834, 454);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
