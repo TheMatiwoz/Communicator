@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Media;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 
@@ -223,20 +224,9 @@ namespace Communicator
                 string checkingWord = decodedWord;
                 string cleanWord = String.Empty;
 
-                foreach (string vulgarWord in vulgarWordsSeperately)
-                {
-                    if (vulgarWord.Equals(decodedWord))
-                    {
-                        foreach (char c in decodedWord)
-                        {
-                            cleanWord += '*';
-                        }
-                        checkingWord = cleanWord;
-                        break;     //exit loop with vulgar words after finding one
-                    }
-                }
-                cleanWord = checkingWord;
-                cleanText += cleanWord + " ";
+                bool isVulgar = Array.Exists(vulgarWordsSeperately, vulgarWord => vulgarWord == decodedWord);
+                cleanWord = !isVulgar ? checkingWord : new Regex("\\S").Replace(checkingWord, "*"); ;
+                cleanText += $"{cleanWord} ";
             }
 
             return cleanText;
