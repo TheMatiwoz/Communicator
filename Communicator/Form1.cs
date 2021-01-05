@@ -62,7 +62,7 @@ namespace Communicator
             StringBuilder stringBuilderCleanMessage = new StringBuilder();
 
             ConvertEveryCharInOriginalTextBox(stringBuilderWithSpaces, stringBuilderCleanMessage);
-            label1.Text = stringBuilderWithSpaces.ToString();
+            readBox.Text = stringBuilderWithSpaces.ToString();
 
             System.IO.File.WriteAllText(filepath + filename, stringBuilderCleanMessage.ToString());
             isTextConverted = true;
@@ -126,7 +126,7 @@ namespace Communicator
             }
             catch (IOException e)
             {
-                Program.listOfForms[differentFormNumber].label1.Text = "ERROR";
+                Program.listOfForms[differentFormNumber].readBox.Text = "ERROR";
             }
         }
 
@@ -151,7 +151,7 @@ namespace Communicator
             Encoding ascii = Encoding.ASCII;
             String decodedString = ascii.GetString(GetBytesFromBinaryString(stringBuilder.ToString()));
             string finalText = CheckIfWordIsNotVulgar(decodedString);
-            Program.listOfForms[differentFormNumber].label1.Text = finalText;
+            Program.listOfForms[differentFormNumber].readBox.Text = finalText;
         }
 
         private static int WriteBytesInProperOrderToDecode(string substring, int bytesNumber, char[] result)

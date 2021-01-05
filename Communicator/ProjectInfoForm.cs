@@ -24,7 +24,7 @@ namespace Communicator
         {
             String text = "Projekt ma na celu wykorzystanie interfejsow w celu komunikacji miedzy dwoma formularzami. " +
                 "Obydwa okna sa zarazem nadanikiem jak i odbiornikiem. " +
-                "Tekst do wyslania jest formatowany w postaci bit stopu, bity znaku od LSB do MSB oraz dwa bity stopu " +
+                "Tekst do wyslania jest formatowany w postaci << bit startu, bity znaku od LSB do MSB oraz dwa bity stopu >> " +
                 "Jako nosnik informacji zostal uzyty plik tekstowy. " +
                 "W celu dbalosci o czystosc jezyka w program zostal wbudowany slownik grubianstw, zamieniajacy brzydkie " +
                 "slowa na gwiazdki.";
