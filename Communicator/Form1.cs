@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
+using System.Media;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
+//DONE
 //poprawilem nazwe funkcji na konwencje c#
-//prawidlowe wyslanie zachodzi po uprzedniem konwersji
+//prawidlowe wyslanie zachodzi po uprzedniem konwersji, mozna skonwertowac puste pole, 
+//wtedy jest wysylane puste pole (tak powinno byc)
+//zabezpieczenie przed nadawaniem polskich znakow - konwersja ą na a itd.
+//sprawdzenie czy slowo nie jest wulgarne
+//dzwiek przy wysylaniu
 
 //TODO 
-//zabezpieczyc przed nadawaniem polskich znakow - konwersja ą na a itd.
-//dzwiek przy wysylaniu
-//slownik grubianstw
+//LADNIE ZEBY WYGLADALO
 
 namespace Communicator
 {
@@ -29,15 +28,18 @@ namespace Communicator
         private List<char[]> byteArray = new List<char[]>();
         private string binaryCode;
         private string filename;
+        private Boolean isTextConverted = false;
+        private SoundPlayer messageIsSent;
 
-        /*mine filepath, to be deleted*/
-        private readonly string filepath = @"C:\\users\\micha\\Downloads\\";
-
+        private readonly string filepath = @"";
 
         public Form1()
         {
             InitializeComponent();
             InitializeStartAndStopBits();
+            InitializeSoundPlayer();
+            FormBorderStyle = FormBorderStyle.FixedSingle; //restrict from resizing
+            MaximizeBox = false;  //disable maximize button
         }
 
         private void InitializeStartAndStopBits()
@@ -46,6 +48,11 @@ namespace Communicator
             singleSign[9] = '1'; binaryTextWithoutSpaces[9] = '1';
             singleSign[10] = '1'; binaryTextWithoutSpaces[10] = '1';
             singleSign[11] = ' ';
+        }
+
+        private void InitializeSoundPlayer()
+        {
+            messageIsSent = new SoundPlayer(Properties.Resources.messageSent);
         }
 
         private void ConvertText_Click(object sender, EventArgs e)
@@ -58,15 +65,17 @@ namespace Communicator
             label1.Text = stringBuilderWithSpaces.ToString();
 
             System.IO.File.WriteAllText(filepath + filename, stringBuilderCleanMessage.ToString());
+            isTextConverted = true;
         }
 
-        private void ConvertEveryCharInOriginalTextBox(StringBuilder stringBuilderWithSpaces, 
+        private void ConvertEveryCharInOriginalTextBox(StringBuilder stringBuilderWithSpaces,
             StringBuilder stringBuilderCleanMessage)
         {
             foreach (char k in textBox.Text)
             {
                 int i = 8;
-                binaryCode = Convert.ToString(k, 2).PadLeft(8, '0');
+                char normalizedChar = NormalizeChar(k);
+                binaryCode = Convert.ToString(normalizedChar, 2).PadLeft(8, '0');
                 foreach (char c in binaryCode)
                 {
                     singleSign[i] = c;
@@ -81,17 +90,27 @@ namespace Communicator
         /*Also calls up reading message in the desination form*/
         private void SendMessage_Click(object sender, EventArgs e)
         {
-            int differentFormNumber = 0;
+            if (isTextConverted)
+            {
+                int differentFormNumber = 0;
 
-            if (formNumer == 0)
-            {
-                differentFormNumber = 1;
+                if (formNumer == 0)
+                {
+                    differentFormNumber = 1;
+                }
+                else if (formNumer == 1)
+                {
+                    differentFormNumber = 0;
+                }
+                messageIsSent.Play();
+                ReadMessage(differentFormNumber);
+                isTextConverted = false;
             }
-            else if (formNumer == 1)
+            else
             {
-                differentFormNumber = 0;
+                EmptyMessageError ErrorMessage = new EmptyMessageError();
+                ErrorMessage.ShowDialog();
             }
-            ReadMessage(differentFormNumber);
         }
 
         private void ReadMessage(int differentFormNumber)
@@ -107,7 +126,7 @@ namespace Communicator
             }
             catch (IOException e)
             {
-                //write down that conversion went wrong
+                Program.listOfForms[differentFormNumber].label1.Text = "ERROR";
             }
         }
 
@@ -118,7 +137,7 @@ namespace Communicator
             int endOfNSign = currentNumberOfDecodedSign + lengthOfCleanFrame;
             StringBuilder stringBuilder = new StringBuilder(messageLength);
 
-            for (int i=0; i<messageLength/lengthOfCleanFrame; i++)
+            for (int i = 0; i < messageLength / lengthOfCleanFrame; i++)
             {
                 string substring = fileContent.Substring(currentNumberOfDecodedSign, endOfNSign);
                 int bytesNumber = 11;
@@ -131,7 +150,8 @@ namespace Communicator
 
             Encoding ascii = Encoding.ASCII;
             String decodedString = ascii.GetString(GetBytesFromBinaryString(stringBuilder.ToString()));
-            Program.listOfForms[differentFormNumber].label1.Text = decodedString;
+            string finalText = CheckIfWordIsNotVulgar(decodedString);
+            Program.listOfForms[differentFormNumber].label1.Text = finalText;
         }
 
         private static int WriteBytesInProperOrderToDecode(string substring, int bytesNumber, char[] result)
@@ -164,6 +184,84 @@ namespace Communicator
             }
 
             return list.ToArray();
+        }
+
+        private char NormalizeChar(char c)
+        {
+            switch (c)
+            {
+                case 'ą':
+                    return 'a';
+                case 'ć':
+                    return 'c';
+                case 'ę':
+                    return 'e';
+                case 'ł':
+                    return 'l';
+                case 'ń':
+                    return 'n';
+                case 'ó':
+                    return 'o';
+                case 'ś':
+                    return 's';
+                case 'ż':
+                case 'ź':
+                    return 'z';
+            }
+            return c;
+        }
+
+        private string CheckIfWordIsNotVulgar(string decodedText)
+        {
+            string vulgarWordsInOneString = Properties.Resources.vulgarWords;
+            string[] vulgarWordsSeperately = CleanQuotesAndEndOfLines(vulgarWordsInOneString).Split(',');
+            string[] decodedWordsSeperately = decodedText.Split(' ');
+            string cleanText = String.Empty;
+
+            foreach (string decodedWord in decodedWordsSeperately)
+            {
+                string checkingWord = decodedWord;
+                string cleanWord = String.Empty;
+
+                foreach (string vulgarWord in vulgarWordsSeperately)
+                {
+                    if (vulgarWord.Equals(decodedWord))
+                    {
+                        foreach (char c in decodedWord)
+                        {
+                            cleanWord += '*';
+                        }
+                        checkingWord = cleanWord;
+                        break;     //exit loop with vulgar words after finding one
+                    }
+                }
+                cleanWord = checkingWord;
+                cleanText += cleanWord + " ";
+            }
+
+            return cleanText;
+        }
+
+        private string CleanQuotesAndEndOfLines(string filename)
+        {
+            return filename.Replace("'", "").Replace(" ", "").Replace("\n", "").Replace("\r\n", "").Replace("\r", "");
+        }
+
+        private void oProjekcieToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProjectInfoForm projectInfoForm = new ProjectInfoForm();
+            projectInfoForm.ShowDialog();
+        }
+
+        private void oTworcachToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutUsForm aboutUsForm = new AboutUsForm();
+            aboutUsForm.ShowDialog();
+        }
+
+        private void wyjdzToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
