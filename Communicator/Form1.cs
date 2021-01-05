@@ -189,6 +189,19 @@ namespace Communicator
 
         private char NormalizeChar(char c)
         {
+            var changerDict = new Dictionary<Char, Char>()
+            {
+                { 'ą', 'a' },
+                { 'ć', 'c' },
+                { 'ę', 'e' },
+                { 'ł', 'l' },
+                { 'ń', 'n' },
+                { 'ó', 'o' },
+                { 'ś', 's' },
+                { 'ż', 'z' },
+                { 'ź', 'z' }
+            };
+            return changerDict.ContainsKey(c) ? changerDict[c] : c;
             switch (c)
             {
                 case 'ą':
