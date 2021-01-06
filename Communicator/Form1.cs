@@ -199,27 +199,6 @@ namespace Communicator
                 { 'ź', 'z' }
             };
             return changerDict.ContainsKey(c) ? changerDict[c] : c;
-            switch (c)
-            {
-                case 'ą':
-                    return 'a';
-                case 'ć':
-                    return 'c';
-                case 'ę':
-                    return 'e';
-                case 'ł':
-                    return 'l';
-                case 'ń':
-                    return 'n';
-                case 'ó':
-                    return 'o';
-                case 'ś':
-                    return 's';
-                case 'ż':
-                case 'ź':
-                    return 'z';
-            }
-            return c;
         }
 
         private string CheckIfWordIsNotVulgar(string decodedText)
