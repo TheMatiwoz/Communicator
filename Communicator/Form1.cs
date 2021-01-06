@@ -7,17 +7,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 
-//DONE
-//poprawilem nazwe funkcji na konwencje c#
-//prawidlowe wyslanie zachodzi po uprzedniem konwersji, mozna skonwertowac puste pole, 
-//wtedy jest wysylane puste pole (tak powinno byc)
-//zabezpieczenie przed nadawaniem polskich znakow - konwersja ą na a itd.
-//sprawdzenie czy slowo nie jest wulgarne
-//dzwiek przy wysylaniu
-
-//TODO 
-//LADNIE ZEBY WYGLADALO
-
 namespace Communicator
 {
     public partial class Form1 : Form
@@ -32,7 +21,7 @@ namespace Communicator
         private Boolean isTextConverted = false;
         private SoundPlayer messageIsSent;
 
-        private readonly string filepath = @"";
+        private string filepath = @"";
 
         public Form1()
         {
@@ -65,7 +54,15 @@ namespace Communicator
             ConvertEveryCharInOriginalTextBox(stringBuilderWithSpaces, stringBuilderCleanMessage);
             readBox.Text = stringBuilderWithSpaces.ToString();
 
-            System.IO.File.WriteAllText(filepath + filename, stringBuilderCleanMessage.ToString());
+            try
+            {
+                System.IO.File.WriteAllText(filepath + filename, stringBuilderCleanMessage.ToString());
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                filepath = @"C:\\Users\Public";
+                System.IO.File.WriteAllText(filepath + filename, stringBuilderCleanMessage.ToString());
+            }
             isTextConverted = true;
         }
 
@@ -222,9 +219,10 @@ namespace Communicator
             foreach (string decodedWord in decodedWordsSeperately)
             {
                 string checkingWord = decodedWord;
+                string checkingVulgarWords = decodedWord.ToLower();
                 string cleanWord = String.Empty;
 
-                bool isVulgar = Array.Exists(vulgarWordsSeperately, vulgarWord => vulgarWord == decodedWord);
+                bool isVulgar = Array.Exists(vulgarWordsSeperately, vulgarWord => vulgarWord == checkingVulgarWords);
                 cleanWord = !isVulgar ? checkingWord : new Regex("\\S").Replace(checkingWord, "*"); ;
                 cleanText += $"{cleanWord} ";
             }
